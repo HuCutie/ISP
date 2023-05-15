@@ -54,7 +54,7 @@ cnf:
   b_gain: *b_gain                     # x1024
 
 cfa:
-  mode: malvar
+  mode: bilinear
 
 ccm:
   ccm:

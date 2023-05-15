@@ -7,6 +7,8 @@ import numpy as np
 from pipeline import Pipeline
 from utils.yacs import Config
 
+import skimage
+
 
 OUTPUT_DIR = './output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -26,7 +28,23 @@ def demo_test_raw():
     output = cv2.cvtColor(data['output'], cv2.COLOR_RGB2BGR)
     cv2.imwrite(output_path, output)
 
+def demo_intermediate_results():
+    cfg = Config('configs/test.yaml')
+
+    pipeline = Pipeline(cfg)
+
+    raw_path = cfg.input.file
+    bayer = np.fromfile(raw_path, dtype='uint16', sep='')
+    bayer = bayer.reshape((cfg.hardware.raw_height, cfg.hardware.raw_width))
+
+    _, intermediates = pipeline.execute(bayer, save_intermediates=True)
+    for module_name, result in intermediates.items():
+        output = pipeline.get_output(result)
+        output_path = op.join(OUTPUT_DIR, '{}.png'.format(module_name))
+        output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_path, output)
 
 if __name__ == '__main__':
     print('Processing test raw...')
-    demo_test_raw()
+    # demo_test_raw()
+    demo_intermediate_results()
