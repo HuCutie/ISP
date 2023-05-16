@@ -1,5 +1,5 @@
 input:
-  file: raw/input.raw
+  file: raw/00134.ARW
 
 module_enable_status:                 # do NOT modify modules order
   dpc: True
@@ -18,11 +18,11 @@ module_enable_status:                 # do NOT modify modules order
   fcs: True
   hsc: True
   bcc: True
-  scl: True
+  scl: False
 
 hardware:
-  raw_width: 640
-  raw_height: 480
+  raw_width: 4288
+  raw_height: 2848
   raw_bit_depth: 12
   bayer_pattern: bggr
 

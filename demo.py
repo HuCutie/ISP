@@ -7,7 +7,7 @@ import numpy as np
 from pipeline import Pipeline
 from utils.yacs import Config
 
-import skimage
+import rawpy
 
 
 OUTPUT_DIR = './output'
@@ -32,9 +32,15 @@ def demo_intermediate_results():
     cfg = Config('configs/test.yaml')
 
     pipeline = Pipeline(cfg)
+    raw = rawpy.imread(cfg.input.file)
+    raw_data = raw.raw_image
+    bayer = np.asarray(raw_data)
+
+    # print(raw_data_np.shape)
+    # print(raw_data_np.dtype)
 
     raw_path = cfg.input.file
-    bayer = np.fromfile(raw_path, dtype='uint16', sep='')
+    # bayer = np.fromfile(raw_path, dtype='uint16', sep='')
     bayer = bayer.reshape((cfg.hardware.raw_height, cfg.hardware.raw_width))
 
     _, intermediates = pipeline.execute(bayer, save_intermediates=True)
