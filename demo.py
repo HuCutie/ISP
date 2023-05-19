@@ -8,49 +8,53 @@ from pipeline import Pipeline
 from utils.yacs import Config
 
 import rawpy
+from PIL import Image
 
 
 OUTPUT_DIR = './output'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-
-def demo_test_raw():
+def demo():
     cfg = Config('configs/test.yaml')
-    pipeline = Pipeline(cfg)
-
-    raw_path = cfg.input.file
-    bayer = np.fromfile(raw_path, dtype='uint16', sep='')
-    bayer = bayer.reshape((cfg.hardware.raw_height, cfg.hardware.raw_width))
-
-    data, _ = pipeline.execute(bayer)
-
-    output_path = op.join(OUTPUT_DIR, 'test.png')
-    output = cv2.cvtColor(data['output'], cv2.COLOR_RGB2BGR)
-    cv2.imwrite(output_path, output)
-
-def demo_intermediate_results():
-    cfg = Config('configs/test.yaml')
+    save_intermediates = False
 
     pipeline = Pipeline(cfg)
-    raw = rawpy.imread(cfg.input.file)
-    raw_data = raw.raw_image
-    bayer = np.asarray(raw_data)
-
-    # print(raw_data_np.shape)
-    # print(raw_data_np.dtype)
-
     raw_path = cfg.input.file
-    # bayer = np.fromfile(raw_path, dtype='uint16', sep='')
+    
+    try:
+        raw = rawpy.imread(raw_path)
+        raw_data = raw.raw_image
+        # print(raw.color_matrix)
+        print(raw.camera_whitebalance)
+        bayer = np.asarray(raw_data)
+        pass
+    except rawpy.LibRawFileUnsupportedError:
+        bayer = np.fromfile(raw_path, dtype='uint16', sep='')
+        pass
+    # image = Image.open(raw_path).convert('L')
+    # bayer = np.array(image)
+    
+    print('Resolution: ', str(cfg.hardware.raw_width) + ' x ' + str(cfg.hardware.raw_height))
+    print('Bit: ', str(cfg.hardware.raw_bit_depth))
+    print('Bayer: ', str(cfg.hardware.bayer_pattern))
+    
     bayer = bayer.reshape((cfg.hardware.raw_height, cfg.hardware.raw_width))
-
-    _, intermediates = pipeline.execute(bayer, save_intermediates=True)
-    for module_name, result in intermediates.items():
-        output = pipeline.get_output(result)
-        output_path = op.join(OUTPUT_DIR, '{}.png'.format(module_name))
-        output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+    
+    if save_intermediates:
+        _, intermediates = pipeline.execute(bayer, save_intermediates=True)
+        for module_name, result in intermediates.items():
+            output = pipeline.get_output(result)
+            output_path = op.join(OUTPUT_DIR, '{}.png'.format(module_name))
+            output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+            cv2.imwrite(output_path, output)
+    else:
+        data, _ = pipeline.execute(bayer)
+        output_path = op.join(OUTPUT_DIR, 'output.png')
+        output = cv2.cvtColor(data['output'], cv2.COLOR_RGB2BGR)
         cv2.imwrite(output_path, output)
+
+    
 
 if __name__ == '__main__':
     print('Processing test raw...')
-    # demo_test_raw()
-    demo_intermediate_results()
+    demo()

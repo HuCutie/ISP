@@ -43,9 +43,9 @@ blc:
 aaf: ~
 
 awb:
-  r_gain: &r_gain 1860                # x1024
+  r_gain: &r_gain 2532                # x1024
   gr_gain: 1024                       # x1024
-  gb_gain: 1024                       # x1024
+  gb_gain: 1724                       # x1024
   b_gain: &b_gain 1280                # x1024
 
 cnf:
@@ -64,7 +64,7 @@ ccm:
 
 gac:
   gain: 256                           # x256
-  gamma: 0.42
+  gamma: 1.0
 
 csc: ~
 
