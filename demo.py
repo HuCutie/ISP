@@ -20,12 +20,15 @@ def demo():
 
     pipeline = Pipeline(cfg)
     raw_path = cfg.input.file
-    
     try:
         raw = rawpy.imread(raw_path)
         raw_data = raw.raw_image
         # print(raw.color_matrix)
         print(raw.camera_whitebalance)
+        print(raw.raw_image.shape)
+        print(raw.raw_pattern)
+        bayer_partten = "".join([chr(raw.color_desc[i]) for i in raw.raw_pattern.flatten()])
+        print(bayer_partten)
         bayer = np.asarray(raw_data)
         pass
     except rawpy.LibRawFileUnsupportedError:

@@ -1,5 +1,5 @@
 input:
-  file: raw/00134.ARW
+  file: raw/xiaomi.dng
 
 module_enable_status:                 # do NOT modify modules order
   dpc: True
@@ -10,21 +10,21 @@ module_enable_status:                 # do NOT modify modules order
   cfa: True
   ccm: True
   gac: True
-  csc: True
-  nlm: True
-  bnf: True
-  ceh: True
-  eeh: True
-  fcs: True
-  hsc: True
-  bcc: True
+  csc: False
+  nlm: False
+  bnf: False
+  ceh: False
+  eeh: False
+  fcs: False
+  hsc: False
+  bcc: False
   scl: False
 
 hardware:
-  raw_width: 4288
-  raw_height: 2848
-  raw_bit_depth: 12
-  bayer_pattern: bggr
+  raw_width: 5184
+  raw_height: 3880
+  raw_bit_depth: 10
+  bayer_pattern: rggb
 
 
 # -------------------- Module Algorithms Parameters --------------------
@@ -43,10 +43,10 @@ blc:
 aaf: ~
 
 awb:
-  r_gain: &r_gain 2532                # x1024
+  r_gain: &r_gain 1900                # x1024
   gr_gain: 1024                       # x1024
-  gb_gain: 1724                       # x1024
-  b_gain: &b_gain 1280                # x1024
+  gb_gain: 1024                       # x1024
+  b_gain: &b_gain 1383                # x1024
 
 cnf:
   diff_threshold: 0
@@ -64,7 +64,7 @@ ccm:
 
 gac:
   gain: 256                           # x256
-  gamma: 1.0
+  gamma: 0.9
 
 csc: ~
 

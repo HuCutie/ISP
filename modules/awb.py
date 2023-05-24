@@ -9,7 +9,7 @@ import numpy as np
 from .basic_module import BasicModule
 from .helpers import split_bayer, reconstruct_bayer
 
-
+# 手动白平衡
 # class AWB(BasicModule):
 #     def __init__(self, cfg):
 #         super().__init__(cfg)
@@ -24,29 +24,19 @@ from .helpers import split_bayer, reconstruct_bayer
 
 #         sub_arrays = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
 #         gains = (self.r_gain, self.gr_gain, self.gb_gain, self.b_gain)
-#         # self.b_gain = np.mean(sub_arrays[2])
-#         # self.gr_gain = np.mean(sub_arrays[0])
-#         # self.gb_gain = np.mean(sub_arrays[3])
-#         # self.r_gain = np.mean(sub_arrays[1])
-#         # avg = (self.b_gain + self.gr_gain + self.gb_gain + self.r_gain) / 4
-        
-#         # gains = np.uint32((avg/self.gr_gain, avg/self.r_gain, avg/self.b_gain, avg/self.gb_gain))
 
 #         wb_sub_arrays = []
 #         for sub_array, gain in zip(sub_arrays, gains):
 #             wb_sub_arrays.append(
 #                 np.right_shift(gain * sub_array, 10)
 #             )
-#         # for sub_array, gain in zip(sub_arrays, gains):
-#         #     wb_sub_arrays.append(
-# 		# 		np.multiply(sub_array, gain)
-# 		# 	)
+
 #         wb_bayer = reconstruct_bayer(wb_sub_arrays, self.cfg.hardware.bayer_pattern)
 #         wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
 
 #         data['bayer'] = wb_bayer.astype(np.uint16)
 
-
+# 基于灰度世界的自动白平衡
 class AWB(BasicModule):
     def __init__(self, cfg):
         super().__init__(cfg)
@@ -66,3 +56,85 @@ class AWB(BasicModule):
         wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
 
         data['bayer'] = wb_bayer.astype(np.uint16)
+
+# 基于白色块的自动白平衡
+# class AWB(BasicModule):
+#     def __init__(self, cfg):
+#         super().__init__(cfg)
+
+#     def execute(self, data):
+#         bayer = data['bayer'].astype(np.float32)
+
+#         bayer_ch = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
+
+#         # 计算最亮区域的平均值作为参考白色值
+#         max_vals = [np.max(ch) for ch in bayer_ch]
+#         ref_white = np.mean(max_vals)
+
+#         gains = [ref_white / max_val for max_val in max_vals]
+#         wb_ch = [np.multiply(ch, gain) for ch, gain in zip(bayer_ch, gains)]
+
+#         wb_bayer = reconstruct_bayer(wb_ch, self.cfg.hardware.bayer_pattern)
+#         wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
+
+#         data['bayer'] = wb_bayer.astype(np.uint16)
+
+# 基于动态阈值的自动白平衡
+# class AWB(BasicModule):
+#     def __init__(self, cfg):
+#         super().__init__(cfg)
+
+#     def execute(self, data):
+#         bayer = data['bayer'].astype(np.float32)
+
+#         bayer_ch = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
+
+#         # 计算每个通道的动态阈值
+#         thresholds = [np.percentile(ch, 75) for ch in bayer_ch]
+
+#         gains = [threshold / np.mean(ch) for ch, threshold in zip(bayer_ch, thresholds)]
+#         print(gains)
+#         wb_ch = [np.multiply(ch, gain) for ch, gain in zip(bayer_ch, gains)]
+
+#         wb_bayer = reconstruct_bayer(wb_ch, self.cfg.hardware.bayer_pattern)
+#         wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
+
+#         data['bayer'] = wb_bayer.astype(np.uint16)
+
+# 基于QCGP(QuadraticGW&PR)自动白平衡
+# class AWB(BasicModule):
+#     def __init__(self, cfg):
+#         super().__init__(cfg)
+
+#     def execute(self, data):
+#         bayer = data['bayer'].astype(np.float32)
+
+#         bayer_ch = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
+        
+#         means_ch = [np.mean(ch) for ch in bayer_ch]
+#         means_ch_max = [np.max(ch) for ch in bayer_ch]
+        
+#         means = np.mean(means_ch)
+#         max = np.mean(means_ch_max)
+#         k_matrix = np.mat([[means], [max]])
+        
+#         gains = []
+#         for ch in bayer_ch:
+#             mean = np.mean(ch)
+#             max = np.max(ch)
+#             coefficient_matrix = np.mat([[mean * mean, mean],
+#                                          [max * max, max]])
+#             conversion_matrix = coefficient_matrix.I * k_matrix
+#             gains.append(conversion_matrix)
+        
+#         gains = np.array(gains)
+#         for chs in bayer_ch:
+#             for ch, gain in zip(chs, gains):
+#                 a = np.array([ch * ch, ch])
+#                 b = np.multiply(a, gain)
+#         wb_ch = [np.multiply(np.array([ch * ch, ch]), gain) for chs in bayer_ch for ch, gain in zip(chs, gains)]
+
+#         wb_bayer = reconstruct_bayer(wb_ch, self.cfg.hardware.bayer_pattern)
+#         wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
+
+#         data['bayer'] = wb_bayer.astype(np.uint16)
