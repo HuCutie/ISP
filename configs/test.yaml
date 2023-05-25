@@ -5,6 +5,7 @@ module_enable_status:                 # do NOT modify modules order
   dpc: True
   blc: True
   aaf: False
+  dga: True
   awb: True
   cnf: True
   cfa: True
@@ -41,6 +42,9 @@ blc:
   beta: 0                             # x1024
 
 aaf: ~
+
+dga:
+  4
 
 awb:
   r_gain: &r_gain 1900                # x1024

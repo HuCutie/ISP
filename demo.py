@@ -16,7 +16,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def demo():
     cfg = Config('configs/test.yaml')
-    save_intermediates = False
+    save_intermediates = True
 
     pipeline = Pipeline(cfg)
     raw_path = cfg.input.file
@@ -27,7 +27,7 @@ def demo():
         # print(raw.camera_whitebalance)
         # print(raw.raw_image.shape)
         # print(raw.raw_pattern)
-        bayer_partten = "".join([chr(raw.color_desc[i]) for i in raw.raw_pattern.flatten()])
+        # bayer_partten = "".join([chr(raw.color_desc[i]) for i in raw.raw_pattern.flatten()])
         # print(bayer_partten)
         bayer = np.asarray(raw_data)
         pass
