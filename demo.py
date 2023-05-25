@@ -24,18 +24,17 @@ def demo():
         raw = rawpy.imread(raw_path)
         raw_data = raw.raw_image
         # print(raw.color_matrix)
-        print(raw.camera_whitebalance)
-        print(raw.raw_image.shape)
-        print(raw.raw_pattern)
+        # print(raw.camera_whitebalance)
+        # print(raw.raw_image.shape)
+        # print(raw.raw_pattern)
         bayer_partten = "".join([chr(raw.color_desc[i]) for i in raw.raw_pattern.flatten()])
-        print(bayer_partten)
+        # print(bayer_partten)
         bayer = np.asarray(raw_data)
         pass
     except rawpy.LibRawFileUnsupportedError:
-        bayer = np.fromfile(raw_path, dtype='uint16', sep='')
+        # bayer = np.fromfile(raw_path, dtype='uint16', sep='')
+        bayer = np.array(Image.open(raw_path))
         pass
-    # image = Image.open(raw_path).convert('L')
-    # bayer = np.array(image)
     
     print('Resolution: ', str(cfg.hardware.raw_width) + ' x ' + str(cfg.hardware.raw_height))
     print('Bit: ', str(cfg.hardware.raw_bit_depth))

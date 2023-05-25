@@ -50,7 +50,7 @@ class AWB(BasicModule):
         mean_gray = np.mean(means)
 
         gains = [mean_gray / ch_mean for ch_mean in means]
-        wb_ch = [np.multiply(ch, gain) for ch, gain in zip(bayer_ch, gains)]
+        wb_ch = [np.multiply(ch, gain * 4) for ch, gain in zip(bayer_ch, gains)]
 
         wb_bayer = reconstruct_bayer(wb_ch, self.cfg.hardware.bayer_pattern)
         wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
