@@ -16,7 +16,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def demo():
     cfg = Config('configs/test.yaml')
-    save_intermediates = True
+    save_intermediates = False
 
     pipeline = Pipeline(cfg)
     raw_path = cfg.input.file
